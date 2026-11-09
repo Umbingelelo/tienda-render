@@ -355,7 +355,7 @@ Si el celular no conecta (redes distintas, wifi de Duoc con restricciones), det�
 ![La app mostrando los errores del 400 bajo cada campo](docs/img/app-02-error-400.png)
 ![La app después de crear un producto (201)](docs/img/app-03-creado-201.png)
 
-> **CORS** solo existe en navegadores. La app en Expo Go no lo necesita. Si usas la versión web (`w`, puerto 8081) ya está permitido. Si tu frontend web usa otro puerto, en Render → **Environment** agrega `CORS_ORIGINS` con la lista **completa**, por ejemplo `http://localhost:8081,http://localhost:5173`, y guarda (Render vuelve a desplegar).
+> **CORS** solo existe en navegadores. La app en Expo Go no lo necesita. Si usas la versión web (`w`, puerto 8081) ya está permitido. Si tu frontend web usa otro puerto, en Render → **Environment** → **Edit** → **Add variable**: key `CORS_ORIGINS`, value con la lista **completa**, por ejemplo `http://localhost:8081,http://localhost:5173`. Presiona **Save, rebuild, and deploy**.
 
 ---
 
