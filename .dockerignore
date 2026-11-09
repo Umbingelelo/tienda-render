@@ -1,0 +1,9 @@
+target/
+.env
+.git/
+.idea/
+.vscode/
+app-movil/
+docs/
+clase2/
+*.md
