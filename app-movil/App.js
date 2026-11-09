@@ -110,7 +110,7 @@ export default function App() {
           onChangeText={(stock) => setForm({ ...form, stock })}
         />
         {errores.stock && <Text style={styles.errorCampo}>{errores.stock}</Text>}
-        <Pressable style={styles.boton} onPress={guardar}>
+        <Pressable style={styles.boton} onPress={guardar} accessibilityRole="button">
           <Text style={styles.textoBoton}>Guardar</Text>
         </Pressable>
         {aviso && <Text style={styles.aviso}>{aviso}</Text>}
@@ -118,7 +118,7 @@ export default function App() {
 
       <View style={styles.filaTitulo}>
         <Text style={styles.subtitulo}>Productos (GET)</Text>
-        <Pressable onPress={cargar}>
+        <Pressable onPress={cargar} accessibilityRole="button">
           <Text style={styles.link}>Recargar</Text>
         </Pressable>
       </View>
@@ -148,7 +148,7 @@ export default function App() {
                 <Text style={styles.nombre}>#{item.id} {item.nombre}</Text>
                 <Text>${item.precio.toLocaleString('es-CL')} · stock {item.stock}</Text>
               </View>
-              <Pressable onPress={() => borrar(item.id)}>
+              <Pressable onPress={() => borrar(item.id)} accessibilityRole="button" accessibilityLabel={`Borrar ${item.nombre}`}>
                 <Text style={styles.borrar}>Borrar</Text>
               </Pressable>
             </View>

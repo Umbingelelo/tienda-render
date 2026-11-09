@@ -2,7 +2,8 @@
 // La pantalla (App.js) nunca escribe una URL: solo llama a estas funciones.
 
 // 👇 CAMBIA ESTA LÍNEA por la URL de TU servicio en Render (sin "/" al final).
-export const API_URL = 'https://tienda-render-XXXX.onrender.com';
+//    La que viene es la API del profesor: sirve para probar, pero tu tienda debe usar la tuya.
+export const API_URL = 'https://tienda-render-km7q.onrender.com';
 
 // GET /api/health -> 200 {"estado":"ok"}. Sirve para saber si la API está despierta.
 export async function salud() {

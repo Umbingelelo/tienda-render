@@ -1,5 +1,6 @@
 package cl.duoc.tiendaneon.producto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.Size;
  * Las anotaciones de jakarta.validation son las reglas que revisa @Valid en el controller.
  * Si una falla, la API responde 400 con el "message" de cada regla.
  */
+@JsonPropertyOrder({"id", "nombre", "descripcion", "precio", "stock", "imagenUrl"})
 @Entity
 @Table(name = "productos")
 public class Producto {
