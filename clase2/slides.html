@@ -787,7 +787,7 @@ td strong.cod{ font-size:26px; }
 </section>
 
 <!-- ============ 9 · ANATOMÍA DE LA RESPUESTA ============ -->
-<section class="slide holgada" data-notas="2 min. La respuesta también tiene tres partes. Mostrar que el código se lee con res.status y el body con res.json(). El 204 llega sin body: por eso un DELETE no se puede leer con res.json().">
+<section class="slide holgada" data-notas="2 min. La respuesta también tiene tres partes. Mostrar que el código se lee con res.status y el body con res.json(). El header Location sirve para pedir el recurso recién creado con GET, sin ir a buscar su id. El 204 llega sin body: por eso un DELETE no se puede leer con res.json().">
   <h2>Una respuesta HTTP tiene tres partes</h2>
 <pre class="grande"><code data-listo="1"><span class="rg a">201 Created</span>
 <span class="rg b">Location: /api/productos/7</span>
@@ -796,7 +796,7 @@ td strong.cod{ font-size:26px; }
 <span class="rg c">{ "id": 7, "nombre": "Polerón", "descripcion": "Con capucha", "precio": 24990, … }</span></code></pre>
   <div class="anatomia">
     <div class="parte"><div class="nombre">Código de estado</div><div class="valor">201 Created</div><div class="dice">Un número que resume cómo te fue. En la app se lee con <code>res.status</code>.</div></div>
-    <div class="parte"><div class="nombre">Headers</div><div class="valor">Location: /api/productos/7</div><div class="dice">Datos extra. <code>Location</code> dice dónde quedó el producto nuevo.</div></div>
+    <div class="parte"><div class="nombre">Headers</div><div class="valor">Location: /api/productos/7</div><div class="dice"><code>Location</code> dice dónde quedó el producto nuevo: lo pides con <code>GET</code> sin buscar su id.</div></div>
     <div class="parte"><div class="nombre">Body</div><div class="valor">{ "id": 7, … }</div><div class="dice">El producto guardado, ya con su <code>id</code>. Se lee con <code>res.json()</code>.</div></div>
   </div>
   <div class="ejemplo" data-ejemplo="código de estado">
@@ -898,12 +898,12 @@ GET /api/getProductos?id=3
 </section>
 
 <!-- ============ 14 · TABLA DE CÓDIGOS ============ -->
-<section class="slide holgada" data-notas="3 min. Recorrer la tabla de arriba abajo con el ejemplo de la última columna. Los dos que sorprenden: 405 (la ruta existe pero con otro método) y 415 (se olvidó el Content-Type). Ambos los van a provocar en Postman en la actividad.">
+<section class="slide holgada" data-notas="3 min. Recorrer la tabla de arriba abajo con el ejemplo de la última columna. Del 201: Location sirve para pedir el recurso recién creado con GET, sin buscar su id. Los dos que sorprenden: 405 (la ruta existe pero con otro método) y 415 (se olvidó el Content-Type). En la actividad (parte C) los provocan en Postman: el 405 con DELETE /api/productos sin id, y el 415 con POST /api/productos con Body raw y el tipo en Text.">
   <h2>Los códigos que vas a usar</h2>
   <table>
     <tr><th style="width:32%">Código</th><th style="width:36%">Cuándo</th><th style="width:32%">Ejemplo en tu API</th></tr>
     <tr class="f2"><td><strong class="cod">200</strong> OK</td><td>Salió bien y hay body</td><td><code>GET /api/productos</code></td></tr>
-    <tr class="f2"><td><strong class="cod">201</strong> Created</td><td>Se creó algo. <code>Location</code> trae su ruta</td><td><code>POST /api/productos</code></td></tr>
+    <tr class="f2"><td><strong class="cod">201</strong> Created</td><td>Se creó algo. <code>Location</code> trae su ruta: úsala para un <code>GET</code></td><td><code>POST /api/productos</code></td></tr>
     <tr class="f2"><td><strong class="cod">204</strong> No Content</td><td>Salió bien y no hay body</td><td><code>DELETE /api/productos/3</code></td></tr>
     <tr class="f4"><td><strong class="cod">400</strong> Bad Request</td><td>Los datos no sirven o el JSON está mal</td><td><code>POST</code> sin <code>nombre</code></td></tr>
     <tr class="f4"><td><strong class="cod">404</strong> Not Found</td><td>Ese recurso o esa ruta no existe</td><td><code>GET /api/productos/99</code></td></tr>
@@ -949,7 +949,7 @@ GET /api/getProductos?id=3
       </button>
       <button class="opcion" data-op="b">
         <span class="letra">B</span><span><code>201 Created</code></span>
-        <span class="porque">Correcto. 201 significa «se creó». Además trae el header <code>Location: /api/productos/7</code> con la ruta del producto nuevo.</span>
+        <span class="porque">Correcto. 201 es «se creó». El header <code>Location: /api/productos/7</code> te deja pedirlo con <code>GET</code>, sin buscar su id.</span>
       </button>
       <button class="opcion" data-op="c">
         <span class="letra">C</span><span><code>204 No Content</code></span>
@@ -1094,7 +1094,7 @@ public class ManejadorErrores {
 </section>
 
 <!-- ============ 22 · PREDICE EL 400 ============ -->
-<section class="slide" data-notas="2 min. Que lo digan antes de revelar. Dos errores a la vez: la API los devuelve todos juntos, no de a uno. Y Neon nunca se entera.">
+<section class="slide" data-notas="2 min. Que lo digan antes de revelar. Dos errores a la vez: la API los devuelve todos juntos, no de a uno. Y Neon nunca se entera. Ojo: si el body no trae stock, aparece también «El stock es obligatorio», y el orden de las claves en campos puede variar.">
   <h2>Predice: un nombre vacío y un precio negativo</h2>
   <div class="widget" data-widget="predice">
     <span class="widget-titulo">Predice el resultado</span>
@@ -1110,7 +1110,7 @@ Content-Type: application/json
 </section>
 
 <!-- ============ 23 · LA MISMA FORMA ============ -->
-<section class="slide" data-notas="2 min. Lo importante para el frontend: status, error, mensaje y ruta están SIEMPRE; campos solo en el 400 de validación. Si la app lee mensaje, tiene algo que mostrar en cualquier error.">
+<section class="slide" data-notas="2 min. Lo importante para el frontend: status, error, mensaje y ruta están SIEMPRE; campos solo en el 400 de validación. Si la app lee mensaje, tiene algo que mostrar en cualquier error. El orden de las claves dentro de campos puede variar.">
   <h2>Todos los errores tienen la misma forma</h2>
   <div class="cols2">
     <div class="diagrama">
@@ -1175,7 +1175,7 @@ Content-Type: application/json
 <span class="linea" data-paso="4">    body: JSON.stringify(producto),</span>
 <span class="linea" data-paso="4">  });</span>
 <span class="linea" data-paso="5">  const data = await res.json();</span>
-<span class="linea" data-paso="5">  if (res.status === 400) throw { status: 400, campos: data.campos };</span>
+<span class="linea" data-paso="5">  if (res.status === 400) throw { status: 400, campos: data.campos ?? {}, mensaje: data.mensaje };</span>
 <span class="linea" data-paso="6">  if (!res.ok) throw new Error(`Error ${res.status}`);</span>
 <span class="linea" data-paso="6">  return data; // 201</span>
 <span class="linea" data-paso="6">}</span></code></pre>
@@ -1183,7 +1183,7 @@ Content-Type: application/json
     <div class="porque-paso" data-paso="2">Por defecto <code>fetch</code> hace <code>GET</code>. Para crear hay que decir <code>POST</code>.</div>
     <div class="porque-paso" data-paso="3">Este header avisa que el body viene en JSON. Si lo olvidas, la API responde <strong>415</strong>.</div>
     <div class="porque-paso" data-paso="4"><code>JSON.stringify</code> convierte el objeto en texto JSON: el body siempre viaja como texto.</div>
-    <div class="porque-paso" data-paso="5">Se lee el body <strong>antes</strong> de revisar el código, porque en un 400 trae <code>campos</code>. Con 400 se lanza un objeto con los mensajes por campo.</div>
+    <div class="porque-paso" data-paso="5">Se lee el body <strong>antes</strong> de revisar el código: en un 400 trae <code>campos</code> y <code>mensaje</code>. <code>?? {}</code> cubre si no vienen.</div>
     <div class="porque-paso" data-paso="6">Cualquier otro error (404, 500…) es un <code>Error</code> genérico. Si salió bien, <code>data</code> es el producto creado, ya con su <code>id</code>.</div>
   </div>
 </section>
@@ -1224,25 +1224,29 @@ return &lt;FlatList data={productos} renderItem={Fila} /&gt;;</code></pre>
 </section>
 
 <!-- ============ 27 · CAMPOS DEL 400 BAJO CADA INPUT ============ -->
-<section class="slide" data-notas="3 min. Aquí se cierra el círculo con las validaciones: los mensajes que escribimos en Producto.java en español son los que aparecen bajo cada input. La clave de campos coincide con el nombre del atributo: errores.nombre, errores.precio.">
+<section class="slide" data-notas="3 min. Aquí se cierra el círculo con las validaciones: los mensajes que escribimos en Producto.java en español son los que aparecen bajo cada input. La clave de campos coincide con el nombre del atributo: errores.nombre, errores.precio. Ojo: Number('') da 0, y así el backend no diría «obligatorio». Por eso, si el input está vacío se envía null (igual que App.js del repositorio).">
   <h2>Los mensajes del 400, bajo cada input</h2>
   <div class="cols-codigo">
-<pre class="chico"><code>const [errores, setErrores] = useState({});
+<pre class="chico"><code>const [form, setForm] = useState(formularioVacio);
+const [errores, setErrores] = useState({});
 
 async function guardar() {
   const producto = {
-    nombre, precio: Number(precio), stock: Number(stock),
+    nombre: form.nombre,
+    precio: form.precio === '' ? null : Number(form.precio),
+    stock: form.stock === '' ? null : Number(form.stock),
   };
   try {
     await crearProducto(producto);
     setErrores({});
   } catch (e) {
     if (e.status === 400) setErrores(e.campos);
-    else Alert.alert('Ups', e.message);
+    else setAviso(e.message);
   }
 }
 
-&lt;TextInput value={nombre} onChangeText={setNombre} /&gt;
+&lt;TextInput value={form.nombre}
+  onChangeText={(nombre) =&gt; setForm({ ...form, nombre })} /&gt;
 {errores.nombre &amp;&amp; &lt;Text style={s.error}&gt;{errores.nombre}&lt;/Text&gt;}</code></pre>
     <div>
       <div class="celular">
@@ -1321,7 +1325,7 @@ async function guardar() {
 </section>
 
 <!-- ============ 30 · PLAN FREE ============ -->
-<section class="slide" data-notas="2 min. Datos de la documentación oficial de Render (render.com/docs/free). El cálculo de las 744 horas lo hacen ellos: 31 días por 24 horas. Dos servicios 24/7 son 1.488 horas y no caben en las 750.">
+<section class="slide" data-notas="2 min. Datos de la documentación oficial de Render (render.com/docs/free). Tu cuenta trae un workspace (My Workspace) y las 750 horas son de ese workspace. El cálculo de las 744 horas lo hacen ellos: 31 días por 24 horas. Dos servicios 24/7 son 1.488 horas y no caben en las 750.">
   <h2>El plan Free: gratis, pero se duerme</h2>
   <div class="cols3">
     <div class="tarjeta">
@@ -1337,7 +1341,7 @@ async function guardar() {
     <div class="tarjeta">
       <div class="cifra">750<small> h</small></div>
       <h3>Al mes</h3>
-      <p>Horas Free por workspace, compartidas entre todos tus servicios.</p>
+      <p>Horas Free por workspace, para todos tus servicios. Tu cuenta trae uno: My Workspace.</p>
     </div>
   </div>
   <div class="ejemplo">
@@ -1477,28 +1481,28 @@ public Map&lt;String, String&gt; salud() {
 </section>
 
 <!-- ============ 34 · ACTIVIDAD ============ -->
-<section class="slide holgada" data-notas="2 min para explicarla; el resto del bloque 3 para hacerla (unos 40 minutos). Instrucciones completas, con evidencias, en clase2/ACTIVIDAD.md del repositorio tienda-render. Recordar: un solo servicio Free por equipo.">
+<section class="slide holgada" data-notas="2 min para explicarla; el resto del bloque 3 para hacerla (unos 40 minutos). Instrucciones completas, con evidencias, en clase2/ACTIVIDAD.md del repositorio tienda-render. Recordar: una sola cuenta de Render y un solo servicio con robot por equipo.">
   <div class="con-logo"><img class="logo" alt="GitHub" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMTgxNzE3IiByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R2l0SHViPC90aXRsZT48cGF0aCBkPSJNMTIgLjI5N2MtNi42MyAwLTEyIDUuMzczLTEyIDEyIDAgNS4zMDMgMy40MzggOS44IDguMjA1IDExLjM4NS42LjExMy44Mi0uMjU4LjgyLS41NzcgMC0uMjg1LS4wMS0xLjA0LS4wMTUtMi4wNC0zLjMzOC43MjQtNC4wNDItMS42MS00LjA0Mi0xLjYxQzQuNDIyIDE4LjA3IDMuNjMzIDE3LjcgMy42MzMgMTcuN2MtMS4wODctLjc0NC4wODQtLjcyOS4wODQtLjcyOSAxLjIwNS4wODQgMS44MzggMS4yMzYgMS44MzggMS4yMzYgMS4wNyAxLjgzNSAyLjgwOSAxLjMwNSAzLjQ5NS45OTguMTA4LS43NzYuNDE3LTEuMzA1Ljc2LTEuNjA1LTIuNjY1LS4zLTUuNDY2LTEuMzMyLTUuNDY2LTUuOTMgMC0xLjMxLjQ2NS0yLjM4IDEuMjM1LTMuMjItLjEzNS0uMzAzLS41NC0xLjUyMy4xMDUtMy4xNzYgMCAwIDEuMDA1LS4zMjIgMy4zIDEuMjMuOTYtLjI2NyAxLjk4LS4zOTkgMy0uNDA1IDEuMDIuMDA2IDIuMDQuMTM4IDMgLjQwNSAyLjI4LTEuNTUyIDMuMjg1LTEuMjMgMy4yODUtMS4yMy42NDUgMS42NTMuMjQgMi44NzMuMTIgMy4xNzYuNzY1Ljg0IDEuMjMgMS45MSAxLjIzIDMuMjIgMCA0LjYxLTIuODA1IDUuNjI1LTUuNDc1IDUuOTIuNDIuMzYuODEgMS4wOTYuODEgMi4yMiAwIDEuNjA2LS4wMTUgMi44OTYtLjAxNSAzLjI4NiAwIC4zMTUuMjEuNjkuODI1LjU3QzIwLjU2NSAyMi4wOTIgMjQgMTcuNTkyIDI0IDEyLjI5N2MwLTYuNjI3LTUuMzczLTEyLTEyLTEyIi8+PC9zdmc+"><h2>Actividad: tu API en Render</h2></div>
   <p>Repositorio: <code>github.com/Umbingelelo/tienda-render</code>. Las instrucciones completas están en <code>clase2/ACTIVIDAD.md</code>.</p>
   <table>
     <tr><th>Parte</th><th>Qué queda hecho</th></tr>
     <tr><td><strong>A</strong></td><td>Backend desplegado en Render con Docker y variables de entorno. <code>GET /api/health</code> responde en la URL pública.</td></tr>
     <tr><td><strong>B</strong></td><td>Monitor en UptimeRobot que visita <code>/api/health</code> cada 5 minutos.</td></tr>
-    <tr><td><strong>C</strong></td><td>Rutas y códigos probados en Postman contra la URL pública: 200, 201, 204, 400 y 404.</td></tr>
-    <tr><td><strong>D</strong></td><td>App Expo que lista y crea productos usando la URL pública, con cargando, error y los mensajes del 400.</td></tr>
+    <tr><td><strong>C</strong></td><td>Rutas y códigos probados en Postman contra la URL pública: 200, 201, 204, 400, 404, 405 y 415.</td></tr>
+    <tr><td><strong>D</strong></td><td>App Expo que lista, crea y borra productos usando la URL pública, con cargando, error y los mensajes del 400.</td></tr>
   </table>
   <p class="suave">En Postman usa la URL de Render, no <code>localhost</code>: así pruebas lo mismo que verá tu app.</p>
 </section>
 
 <!-- ============ 35 · PARTE A EN 4 PASOS ============ -->
-<section class="slide" data-notas="1 min. Resumen de la parte A para quien se pierda; el detalle con capturas está en la actividad. La primera construcción con Docker tarda unos minutos: aprovechar ese tiempo para crear el robot (parte B). El paso 3 es el error más probable: sin las tres variables Spring no arranca.">
+<section class="slide" data-notas="1 min. Resumen de la parte A para quien se pierda; el detalle con capturas está en la actividad. La primera construcción con Docker tarda unos minutos: aprovechar ese tiempo para crear el robot (parte B). El paso 3 es el error más probable: si falta DB_URL, Spring Boot 4.1 no arranca y la consola dice que la url debe empezar con jdbc.">
   <h2>Parte A en cuatro pasos</h2>
   <div class="diagrama">
     <span class="rotulo">De tu repositorio a la URL pública</span>
     <div class="secuencia">
       <div class="paso-seq"><span class="n">1</span><div><div class="quien">Render</div><div class="que">Crea un <strong>Web Service</strong> y conéctalo a tu repositorio de GitHub.</div></div></div>
       <div class="paso-seq"><span class="n">2</span><div><div class="quien">Render</div><div class="que">Elige <strong>Docker</strong> como lenguaje y el plan <strong>Free</strong>.</div></div></div>
-      <div class="paso-seq corta"><span class="n">3</span><div><div class="quien">Render, Environment</div><div class="que">Agrega <code>DB_URL</code>, <code>DB_USERNAME</code> y <code>DB_PASSWORD</code>. Si falta una, el servicio falla con <code>Could not resolve placeholder 'DB_URL'</code>.</div></div></div>
+      <div class="paso-seq corta"><span class="n">3</span><div><div class="quien">Render, Environment</div><div class="que">Agrega <code>DB_URL</code>, <code>DB_USERNAME</code> y <code>DB_PASSWORD</code>. Si falta <code>DB_URL</code>, el servicio falla con <code>'url' must start with "jdbc"</code>.</div></div></div>
       <div class="paso-seq"><span class="n">4</span><div><div class="quien">Navegador</div><div class="que">Espera a que diga <strong>Live</strong> y abre <code>/api/health</code> en tu URL: debe mostrar <code>{"estado":"ok"}</code>.</div></div></div>
     </div>
     <p class="pie-diagrama">La primera construcción tarda unos minutos: mientras tanto, crea el robot de la parte B.</p>

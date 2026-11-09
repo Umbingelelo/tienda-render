@@ -16,11 +16,12 @@ Que el backend de la tienda del equipo:
 - La base de **Neon** de la Clase 1 y su `.env` (los 3 datos). Si no la tienen, hagan primero los pasos 1 y 2 de https://github.com/Umbingelelo/tienda-neon.
 - Cuenta de **GitHub** (cada integrante).
 - **Postman** (web o escritorio).
-- Para la Parte D: **Node.js 20+** en el PC y **Expo Go** actualizado en el celular.
+- Para la Parte D: **Node.js 22 LTS o superior** (mínimo 22.13) en el PC y **Expo Go** actualizado en el celular.
 - Guía completa, con capturas: el **README** de https://github.com/Umbingelelo/tienda-render. Los pasos de abajo dicen qué paso del README seguir.
 - Repartan roles: **Nube** (Partes A y B, en su cuenta) · **Rutas** (Parte C) · **App** (Parte D).
+- **Trabajen en paralelo:** mientras Nube despliega (tarda), **Rutas** arma las peticiones en Postman y **App** hace `npm install`, instala Expo Go y prueba con la URL del profesor que ya viene en `app-movil/src/api.js` (creen y borren **solo sus** productos). Cuando Nube entregue la URL, cambien solo la URL base.
 
-> ⚠️ **Una sola cuenta de Render y un solo servicio con robot por equipo.** Render da 750 horas gratis al mes por cuenta y un servicio despierto todo el mes usa ~744. Si alguien crea un segundo servicio "de prueba" con robot, Render suspende todo.
+> ⚠️ **Una sola cuenta de Render y un solo servicio con robot por equipo.** Render da 750 horas gratis al mes por workspace (cada cuenta trae uno) y un servicio despierto todo el mes usa ~744. Si alguien crea un segundo servicio "de prueba" con robot, Render suspende todo.
 
 ---
 
@@ -28,7 +29,7 @@ Que el backend de la tienda del equipo:
 
 1. **Repositorio** (README, paso 0). Elijan **una** opción:
    - **A1 (recomendada):** en el repo del profesor, **Use this template → Create a new repository** → nombre `tienda-<equipo>`.
-   - **A2:** usar el backend del equipo de la Clase 1, copiando `Dockerfile`, `.dockerignore`, `SaludController.java` y `ManejadorErrores.java` (ajustando el `package`).
+   - **A2:** usar el backend del equipo de la Clase 1, copiando los archivos de la tabla **Opción B** del README (incluye reemplazar `Producto`, `ProductoRepository` y `ProductoController`, y copiar `app-movil/`). Prueben `http://localhost:8080/api/health` en su PC antes de subir.
 
    Confirmen en GitHub que **no** está el archivo `.env`.
 2. Crear cuenta en **https://dashboard.render.com/register** con **GitHub** (paso 1).
@@ -56,7 +57,7 @@ Que el backend de la tienda del equipo:
 
 ## Parte C: Rutas y códigos con Postman (todo el equipo, contra la URL pública)
 
-Hagan las 8 peticiones de la tabla del **README, paso 7**, usando **su** URL. Para cada una anoten el código que recibieron:
+Hagan las 9 peticiones de la tabla del **README, paso 7**, usando **su** URL. Para cada una anoten el código que recibieron:
 
 | # | Petición | Código esperado | Código obtenido |
 |---|---|---|---|
@@ -67,26 +68,27 @@ Hagan las 8 peticiones de la tabla del **README, paso 7**, usando **su** URL. Pa
 | 5 | `POST /api/productos` con un JSON roto | 400 | |
 | 6 | `GET /api/productos/99999` | 404 | |
 | 7 | `DELETE /api/productos` (sin id) | 405 | |
-| 8 | `DELETE /api/productos/{id del #3}` | 204 | |
+| 8 | `DELETE /api/productos/{id que devolvió la #3}` | 204 | |
+| 9 | `POST /api/productos` con Body **raw → Text** | 415 | |
 
 Luego respondan en 1 o 2 líneas cada una:
 1. En la petición 3, ¿qué dice el header `Location` de la respuesta y para qué sirve?
 2. En la petición 4, ¿en qué parte del JSON de error está el mensaje de **cada** campo?
 3. ¿Por qué estas rutas son correctas y `POST /api/crearProducto` no lo sería?
 
-**Evidencia C:** la tabla completa y captura de Postman de las peticiones **3** (con la pestaña **Headers** mostrando `Location`) y **4** (con `campos`).
+**Evidencia C:** la tabla completa y captura de Postman de las peticiones **3** (con los **Headers de la respuesta** mostrando `Location`) y **4** (con `campos`).
 
 ## Parte D: La app en el celular (README, paso 9)
 
-1. Descargar el repositorio del equipo (**Code → Download ZIP**, o `git clone`) y abrir la carpeta `app-movil` en VS Code.
+1. Descargar el repositorio del equipo (**Code → Download ZIP**, o `git clone`) y abrir en VS Code **la carpeta del repositorio** (la que contiene `app-movil`). Si su repo no tiene `app-movil` (A2 sin copiarla), descárguenla del repo del profesor.
 2. En `app-movil/src/api.js` cambiar `API_URL` por **su** URL de Render (sin `/` al final).
 3. En la terminal: `cd app-movil` → `npm install` → `npx expo start`.
-4. Abrir **Expo Go** en el celular y escanear el QR. Si no conecta: `npx expo start --tunnel`.
+4. Abrir **Expo Go** en el celular y escanear el QR. Si no conecta: usen el **hotspot** del celular para el PC, o `npx expo login` + `npx expo start --tunnel` (README, paso 9.2).
 5. En la app:
-   - ver la lista de productos (**200**);
+   - ver la lista de productos (`GET → 200 OK`);
    - guardar con el nombre vacío y precio `-1` y ver los mensajes bajo cada campo (**400**);
-   - crear un producto real de su tienda (**201**);
-   - borrar ese producto (**204**).
+   - crear un producto real de su tienda (**201**) y **tomar la captura en ese momento**;
+   - borrar ese producto (**204**), no los de ejemplo.
 
 **Evidencia D:** foto o captura **del celular** mostrando la app con: (1) los errores del 400 bajo los campos y (2) el aviso `201 Created`.
 
@@ -95,10 +97,12 @@ Luego respondan en 1 o 2 líneas cada una:
 Agreguen al backend una ruta nueva que respete las reglas de nombres, por ejemplo **productos con poco stock**:
 
 - `GET /api/productos?stockMax=5` → 200 + productos con `stock <= 5`.
-  - En `ProductoRepository`: `List<Producto> findByStockLessThanEqual(Integer stock);`
-  - En `ProductoController.listar(...)`: un segundo `@RequestParam(required = false) Integer stockMax`.
+  - En `ProductoRepository`: `List<Producto> findByStockLessThanEqual(Integer stock);` (necesita `import java.util.List;`).
+  - En `ProductoController.listar(...)`: agreguen un segundo parámetro `@RequestParam(required = false) Integer stockMax` y úsenlo antes del `return`: `if (stockMax != null) return repository.findByStockLessThanEqual(stockMax);`
+  - Piensen: si llegan `nombre` y `stockMax` juntos, ¿qué debería responder? (Pista: Spring también entiende `findByNombreContainingIgnoreCaseAndStockLessThanEqual(nombre, stockMax)`.)
+  - El nombre del parámetro distingue mayúsculas: `?stockmax=5` se ignora sin error.
 - Hagan `git push` y comprueben que Render la desplegó solo (**Events**).
-- Muéstrenla en la app (un botón "Poco stock").
+- Muéstrenla en la app: en `src/api.js` copien `listarProductos()` como `listarPocoStock()` con `` fetch(`${API_URL}/api/productos?stockMax=5`) `` y agreguen un botón "Poco stock".
 
 **Evidencia:** captura de Postman con la ruta nueva respondiendo desde la URL de Render.
 
@@ -119,9 +123,9 @@ Agreguen al backend una ruta nueva que respete las reglas de nombres, por ejempl
 |---|---|---|---|
 | A. Despliegue | Servicio **Live** en plan Free, URL pública responde, claves solo en variables de entorno | Desplegado, pero con claves en el repositorio o no responde siempre | No desplegado |
 | B. Robot | Monitor **Up** cada 5 min a `/api/health` y respuesta correcta | Monitor creado, pero a otra ruta o sin explicar el porqué | Sin robot |
-| C. Rutas y códigos | Los 8 códigos obtenidos coinciden y las 3 respuestas son correctas | 5 a 7 códigos correctos, o respuestas incompletas | Menos de 5 |
+| C. Rutas y códigos | Los 9 códigos obtenidos coinciden y las 3 respuestas son correctas | 6 a 8 códigos correctos, o respuestas incompletas | Menos de 6 |
 | D. App | La app en el celular consume **su** URL y muestra 200, 400, 201 y 204 | Funciona solo en el navegador del PC, o contra la URL del profesor | No funciona |
 
 ## Si algo falla
 
-Revisen la tabla **"Problemas frecuentes"** del README antes de llamar al docente. En Render, abran **Logs** y busquen la **primera** línea que diga `Caused by:`.
+Revisen la tabla **"Problemas frecuentes"** del README antes de llamar al docente. En Render, abran **Logs** y busquen las líneas `Caused by:`: la **última** suele ser la causa real.

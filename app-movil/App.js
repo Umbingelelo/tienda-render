@@ -2,8 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -13,6 +15,8 @@ import {
 import { API_URL, crearProducto, eliminarProducto, listarProductos, salud } from './src/api';
 
 const formularioVacio = { nombre: '', precio: '', stock: '' };
+// El teclado numérico de iPhone no trae la tecla "-": este sí, para poder probar el 400 con -1.
+const tecladoNumerico = Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric';
 
 export default function App() {
   const [productos, setProductos] = useState([]);
@@ -78,6 +82,18 @@ export default function App() {
     }
   }
 
+  function confirmarBorrado(item) {
+    const pregunta = `¿Borrar "${item.nombre}" (#${item.id})?`;
+    if (Platform.OS === 'web') {
+      if (window.confirm(pregunta)) borrar(item.id);
+      return;
+    }
+    Alert.alert('Borrar producto', pregunta, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Borrar', style: 'destructive', onPress: () => borrar(item.id) },
+    ]);
+  }
+
   return (
     <View style={styles.pantalla}>
       <StatusBar style="dark" />
@@ -97,7 +113,7 @@ export default function App() {
         <TextInput
           style={styles.input}
           placeholder="Precio"
-          keyboardType="numeric"
+          keyboardType={tecladoNumerico}
           value={form.precio}
           onChangeText={(precio) => setForm({ ...form, precio })}
         />
@@ -105,7 +121,7 @@ export default function App() {
         <TextInput
           style={styles.input}
           placeholder="Stock"
-          keyboardType="numeric"
+          keyboardType={tecladoNumerico}
           value={form.stock}
           onChangeText={(stock) => setForm({ ...form, stock })}
         />
@@ -117,7 +133,9 @@ export default function App() {
       </View>
 
       <View style={styles.filaTitulo}>
-        <Text style={styles.subtitulo}>Productos (GET)</Text>
+        <Text style={styles.subtitulo}>
+          Productos (GET{!cargando && !error ? ` → 200 OK · ${productos.length}` : ''})
+        </Text>
         <Pressable onPress={cargar} accessibilityRole="button">
           <Text style={styles.link}>Recargar</Text>
         </Pressable>
@@ -148,7 +166,7 @@ export default function App() {
                 <Text style={styles.nombre}>#{item.id} {item.nombre}</Text>
                 <Text>${item.precio.toLocaleString('es-CL')} · stock {item.stock}</Text>
               </View>
-              <Pressable onPress={() => borrar(item.id)} accessibilityRole="button" accessibilityLabel={`Borrar ${item.nombre}`}>
+              <Pressable onPress={() => confirmarBorrado(item)} accessibilityRole="button" accessibilityLabel={`Borrar ${item.nombre}`}>
                 <Text style={styles.borrar}>Borrar</Text>
               </Pressable>
             </View>
